@@ -927,7 +927,10 @@ async function proxyWorkspaceRequest(args: {
         return
       }
       if (isSessionNotFoundError(error)) {
-        reply.code(404).send({ error: "Session not found" })
+        // Mirror the daemon's tagged error body so @opencode/client's
+        // declaredError(_tag) classification stays intact on the UI side;
+        // an untagged 404 is unrecognizable and poisons the session list.
+        reply.code(404).send({ error: "Session not found", _tag: "SessionNotFoundError" })
         return
       }
       throw error
